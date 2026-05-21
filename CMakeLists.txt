@@ -4,7 +4,7 @@ project(Weather VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick Widgets)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -16,8 +16,12 @@ qt_add_qml_module(appWeather
     URI Weather
     QML_FILES
         Main.qml
-        SOURCES
-        SOURCES managermovingicons.h managermovingicons.cpp
+        SettingTrayMenu.qml
+    SOURCES
+        managermovingicons.h managermovingicons.cpp
+        settingstraymenu.h settingstraymenu.cpp
+    RESOURCES
+        images/tray-icon-32x32.png
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -33,6 +37,7 @@ set_target_properties(appWeather PROPERTIES
 
 target_link_libraries(appWeather
     PRIVATE Qt6::Quick
+            Qt6::Widgets
 )
 
 include(GNUInstallDirs)

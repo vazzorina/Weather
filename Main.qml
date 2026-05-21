@@ -12,7 +12,6 @@ Window {
     y: 0
 
     visible: true
-    title: qsTr("Hello World")
     color: "#fff"
     flags: Qt.FramelessWindowHint | Qt.Tool //убирает рамки | не отображает в панели задач
 

@@ -1,15 +1,37 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <windows.h>
 #include <QQuickWindow>
 #include <QQmlContext>
 
-#include "managermovingicons.h"
 
+#include "managermovingicons.h"
+#include "settingstraymenu.h"
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
+
+
+    QQmlApplicationEngine trayMuneQml;
+    QObject::connect(
+        &trayMuneQml,
+        &QQmlApplicationEngine::objectCreationFailed,
+        &app,
+        []() { QCoreApplication::exit(-1); },
+        Qt::QueuedConnection);
+    trayMuneQml.loadFromModule("Weather", "SettingTrayMenu");
+
+    SettingsTrayMenu *stm = new SettingsTrayMenu();
+    stm->showMenu();
+
+    QObject *rootObject = trayMuneQml.rootObjects().first();
+    QObject::connect(stm->actionSettings, &QAction::triggered, [rootObject]() {
+        if (rootObject) {
+            QMetaObject::invokeMethod(rootObject, "showSettingsWindow");
+        }
+    });
 
 
     QQmlApplicationEngine engine;
@@ -25,8 +47,10 @@ int main(int argc, char *argv[])
 
     engine.loadFromModule("Weather", "Main");
 
-    if (engine.rootObjects().isEmpty())
+
+    if (engine.rootObjects().isEmpty() || engine.rootObjects().isEmpty())
         return -1;
+
 
     QQuickWindow *window = qobject_cast<QQuickWindow*>(engine.rootObjects().first());
     if (window) {
