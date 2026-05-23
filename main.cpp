@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
             QMetaObject::invokeMethod(rootObject, "showSettingsWindow");
         }
     });
-
+    QObject::connect(stm->actionExit, &QAction::triggered, &app, QApplication::exit);
 
     QQmlApplicationEngine engine;
     QObject::connect(

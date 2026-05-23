@@ -19,6 +19,7 @@ public:
 
     QAction *actionSettings;
     QAction *actionSearchCity;
+    QAction *actionExit;
 };
 
 #endif // SETTINGSTRAYMENU_H

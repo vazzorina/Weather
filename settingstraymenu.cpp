@@ -19,8 +19,13 @@ SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
     actionSearchCity = new QAction();
     actionSearchCity->setText("Выбрать местоположение");
 
+    actionExit = new QAction();
+    actionExit->setText("Закрыть виджет");
+
     menuTrayIcon->addAction(actionSearchCity);
     menuTrayIcon->addAction(actionSettings);
+    menuTrayIcon->addSeparator();
+    menuTrayIcon->addAction(actionExit);
 }
 
 void SettingsTrayMenu::showMenu() {
