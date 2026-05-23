@@ -2,7 +2,8 @@
 #include <windows.h>
 #include <commctrl.h>
 #include <QRect>
-#include <QDebug>
+#include <QGuiApplication>
+#include <QScreen>
 
 ManagerMovingIcons::ManagerMovingIcons(QObject *parent)
     : QObject{parent}
@@ -49,15 +50,21 @@ void ManagerMovingIcons::repositionDesktopIcons(int x, int y, int width, int hei
         return;
     }
 
+    int spacingX = getDesktopIconsSpacing().first;
+    int spacingY = getDesktopIconsSpacing().second;
+
     POINT localPoint;
     for (int i = 0; i < itemCount; ++i) { // перебираем иконки
         SendMessage(hwndListView, LVM_GETITEMPOSITION, i, (LPARAM)remotePoint); // запоминаем координаты иконки в память проводника
         ReadProcessMemory(hProcess, remotePoint, &localPoint, sizeof(POINT), NULL); // читаем из памяти проводника координаты иконки в нашу программу
+        int checkX = localPoint.x;
+        int checkY = localPoint.y;
+        if (localPoint.x < x) checkX += spacingX;
+        if (localPoint.y < y) checkY += spacingY;
 
-        if (widgetRect.contains(localPoint.x, localPoint.y)) {
-            int newX = localPoint.x;
-            int newY = widgetRect.bottom() + 20; // Выталкиваем иконку вниз
-            SendMessage(hwndListView, LVM_SETITEMPOSITION, i, MAKELPARAM(newX, newY));
+        if (widgetRect.contains(checkX, checkY)) {
+            std::pair<int, int> xy = getNewXY(x, width, localPoint.x, y, height, localPoint.y);
+            SendMessage(hwndListView, LVM_SETITEMPOSITION, i, MAKELPARAM(xy.first, xy.second));
         }
     }
 
@@ -77,16 +84,41 @@ std::pair<int, int> ManagerMovingIcons::getDesktopIconsSpacing() {
     dis.first = LOWORD(spacing); // щирина ячейки
     dis.second = HIWORD(spacing); // высота ячейки
 
-    qDebug() << "Текущий размер ячейки иконки на рабочем столе:" << dis.first << "x" << dis.second;
-
     return dis;
 }
 
 
-int ManagerMovingIcons::getNewX(int qmlWindX, int qmlWindWidth, int localPointX) {
+std::pair<int, int> ManagerMovingIcons::getNewXY(int qmlWindX, int qmlWindWidth, int localPointX, int qmlWindY, int qmlWindHeight, int localPointY) {
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (screen) {
+        int spacingX = getDesktopIconsSpacing().first;
+        int spacingY = getDesktopIconsSpacing().second;
+        int dx1 = localPointX - qmlWindX;
+        int dx2 = (qmlWindX + qmlWindWidth) - localPointX - spacingX;
+        int dy1 = localPointY - qmlWindY;
+        int dy2 = (qmlWindY + qmlWindHeight) - localPointY - spacingY;
 
-}
+        if (qmlWindX <= 0) dx1 = 100000;
+        else if (screen->size().width() <= qmlWindX + qmlWindWidth) dx2 = 100000;
 
-int ManagerMovingIcons::getNewY(int qmlWindY, int qmlWindHeight, int localPointY) {
+        if (qmlWindY <= 0) dy1 = 100000;
+        else if (screen->size().height() <= qmlWindY + qmlWindHeight) dy2 = 100000;
 
+        if (dx1 > dx2 && dy1 > dy2) {
+            if (dx2 > dy2) return std::pair(localPointX, qmlWindY + qmlWindHeight);
+            else return std::pair(qmlWindX + qmlWindWidth, localPointY);
+        }
+        else if (dx1 > dx2 && dy1 <= dy2) {
+            if (dx2 > dy1) return std::pair(localPointX, qmlWindY - spacingY);
+            else return std::pair(qmlWindX + qmlWindWidth, localPointY);
+        }
+        else if (dx1 <= dx2 && dy1 > dy2) {
+            if (dx1 > dy2) return std::pair(localPointX, qmlWindY + qmlWindHeight);
+            else return std::pair(qmlWindX - spacingX, localPointY);
+        }
+        else if (dx1 <= dx2 && dy1 <= dy2) {
+            if (dx1 > dy1) return std::pair(localPointX, qmlWindY - spacingY);
+            else return std::pair(qmlWindX - spacingX, localPointY);
+        }
+    }
 }

@@ -16,8 +16,7 @@ public:
     Q_INVOKABLE void repositionDesktopIcons(int x, int y, int width, int height);
 private:
     HWND getDesktopListView();
-    int getNewX(int qmlWindX, int qmlWindWidth, int localPointX);
-    int getNewY(int qmlWindY, int qmlWindHeight, int localPointY);
+    std::pair<int, int> getNewXY(int qmlWindX, int qmlWindWidth, int localPointX, int qmlWindY, int qmlWindHeight, int localPointY);
     std::pair<int, int> getDesktopIconsSpacing();
 };
 
