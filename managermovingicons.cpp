@@ -57,8 +57,11 @@ void ManagerMovingIcons::repositionDesktopIcons(int x, int y, int width, int hei
     for (int i = 0; i < itemCount; ++i) { // перебираем иконки
         SendMessage(hwndListView, LVM_GETITEMPOSITION, i, (LPARAM)remotePoint); // запоминаем координаты иконки в память проводника
         ReadProcessMemory(hProcess, remotePoint, &localPoint, sizeof(POINT), NULL); // читаем из памяти проводника координаты иконки в нашу программу
+
         int checkX = localPoint.x;
         int checkY = localPoint.y;
+        // прибавляем ширину и длину ячейки для случаев, когда иконка касается
+        // виджета, но начальная точка иконки не находится внутри виджета
         if (localPoint.x < x) checkX += spacingX;
         if (localPoint.y < y) checkY += spacingY;
 
@@ -93,17 +96,20 @@ std::pair<int, int> ManagerMovingIcons::getNewXY(int qmlWindX, int qmlWindWidth,
     if (screen) {
         int spacingX = getDesktopIconsSpacing().first;
         int spacingY = getDesktopIconsSpacing().second;
+        // определяем расстояние до каждого края виджета
         int dx1 = localPointX - qmlWindX;
         int dx2 = (qmlWindX + qmlWindWidth) - localPointX - spacingX;
         int dy1 = localPointY - qmlWindY;
         int dy2 = (qmlWindY + qmlWindHeight) - localPointY - spacingY;
 
+        // проверяем касается ли виджет границ экрана
         if (qmlWindX <= 0) dx1 = 100000;
         else if (screen->size().width() <= qmlWindX + qmlWindWidth) dx2 = 100000;
-
         if (qmlWindY <= 0) dy1 = 100000;
         else if (screen->size().height() <= qmlWindY + qmlWindHeight) dy2 = 100000;
 
+        // определяем в какой четверти виджета находится иконка, и в зависимости к какой стороне
+        // она ближе расположена, перемещаем ее в сторону ближайшего края
         if (dx1 > dx2 && dy1 > dy2) {
             if (dx2 > dy2) return std::pair(localPointX, qmlWindY + qmlWindHeight);
             else return std::pair(qmlWindX + qmlWindWidth, localPointY);
