@@ -5,21 +5,27 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <QAction>
+#include <QLineEdit>
+#include <QPushButton>
 
 class SettingsTrayMenu : public QObject
 {
     Q_OBJECT
 public:
     explicit SettingsTrayMenu(QObject *parent = nullptr);
-    QObject* rootObject = nullptr;
-    void showMenu();
-
     QSystemTrayIcon *systemTrayIcon;
     QMenu *menuTrayIcon;
+    QLineEdit *apiLineEdit;
 
     QAction *actionSettings;
     QAction *actionSearchCity;
     QAction *actionExit;
+
+    QWidget *window;
+
+
+private:
+    void saveAPI();
 };
 
 #endif // SETTINGSTRAYMENU_H

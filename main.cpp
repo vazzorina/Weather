@@ -13,25 +13,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
-
-    QQmlApplicationEngine trayMuneQml;
-    QObject::connect(
-        &trayMuneQml,
-        &QQmlApplicationEngine::objectCreationFailed,
-        &app,
-        []() { QCoreApplication::exit(-1); },
-        Qt::QueuedConnection);
-    trayMuneQml.loadFromModule("Weather", "SettingTrayMenu");
-
     SettingsTrayMenu *stm = new SettingsTrayMenu();
-    stm->showMenu();
 
-    QObject *rootObject = trayMuneQml.rootObjects().first();
-    QObject::connect(stm->actionSettings, &QAction::triggered, [rootObject]() {
-        if (rootObject) {
-            QMetaObject::invokeMethod(rootObject, "showSettingsWindow");
-        }
-    });
     QObject::connect(stm->actionExit, &QAction::triggered, &app, QApplication::exit);
 
     QQmlApplicationEngine engine;
@@ -48,7 +31,7 @@ int main(int argc, char *argv[])
     engine.loadFromModule("Weather", "Main");
 
 
-    if (engine.rootObjects().isEmpty() || engine.rootObjects().isEmpty())
+    if (engine.rootObjects().isEmpty())
         return -1;
 
 
