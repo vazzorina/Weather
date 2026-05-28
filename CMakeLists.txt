@@ -4,7 +4,7 @@ project(Weather VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Quick Widgets Network)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -39,6 +39,7 @@ set_target_properties(appWeather PROPERTIES
 target_link_libraries(appWeather
     PRIVATE Qt6::Quick
             Qt6::Widgets
+            Qt6::Network
 )
 
 include(GNUInstallDirs)

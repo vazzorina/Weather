@@ -47,7 +47,7 @@ SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
     QVBoxLayout *topCardLayout = new QVBoxLayout(topCard);
     topCardLayout->setSpacing(5);
 
-    QLabel *titleLabel = new QLabel(tr("API-ключ сервиса OpenWeather"), topCard);
+    QLabel *titleLabel = new QLabel(tr("API-ключ сервиса WeatherAPI"), topCard);
 
     apiLineEdit = new QLineEdit(topCard);
     apiLineEdit->setPlaceholderText(tr("Введите API-ключ..."));
@@ -68,12 +68,12 @@ SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
     QString infoText = tr(
         "<span style='color: #52616B;'>Чтобы получить API-ключ, необходимо:</span>"
         "<ol style='margin-top: 5px; margin-bottom: 0px; padding-left: 20px; color: #52616B;'>"
-        "<li>Перейти по ссылке: <a href='https://home.openweathermap.org/users/sign_in' style='color: #0078D4;'>https://home.openweathermap.org/users/sign_in</a></li>"
+        "<li>Перейти по ссылке: <a href='https://www.weatherapi.com/signup.aspx' style='color: #0078D4;'>https://www.weatherapi.com/signup.aspx</a></li>"
         "<li>Зарегистрироваться и войти в аккаунт</li>"
-        "<li>Перейти во вкладку Аккаунт -&gt; My API keys или перейти по ссылке: <a href='https://home.openweathermap.org/api_keys' style='color: #0078D4;'>https://home.openweathermap.org/api_keys</a></li>"
-        "<li>Нажать кнопку Generate, чтобы сгенерировать ключ</li>"
-        "<li>Скопировать сгенерированный API-ключ и ввести в поле выше</li>"
-        "<li>Нажать кнопку сохранить.</li>"
+        "<li>Перейти во вкладку API или перейти по ссылке: <a href='https://www.weatherapi.com/my/' style='color: #0078D4;'>https://www.weatherapi.com/my/</a></li>"
+        "<li>Найти сверху страницы автоматически сгенерированный API key</li>"
+        "<li>Нажать на кнопку Copy и вставить API-ключ в поле выше</li>"
+        "<li>Нажать кнопку Сохранить и закрыть</li>"
         "</ol>"
         );
     infoLabel->setText(infoText);
@@ -117,6 +117,7 @@ void SettingsTrayMenu::saveAPI() {
     }
     else {
         weatherData->writeApiKeyToEnvFile(apiLineEdit->text());
+        weatherData->getWeatherData();
         window->close();
     }
 }
