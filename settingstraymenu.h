@@ -8,6 +8,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 
+#include "weatherdata.h"
+
 class SettingsTrayMenu : public QObject
 {
     Q_OBJECT
@@ -23,6 +25,7 @@ public:
 
     QWidget *window;
 
+    WeatherData *weatherData = new WeatherData();
 
 private:
     void saveAPI();

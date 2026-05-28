@@ -95,14 +95,8 @@ SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
 
     connect(actionSettings, &QAction::triggered, window, [=]() {
         window->setVisible(true);
-        QFile file("apikey.txt");
         QString apikey = "";
-        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QTextStream in(&file);
-            apikey = in.readAll();
-
-            file.close();
-        }
+        apikey = weatherData->readApiKeyFromEnvFile();
         if (apikey != "") apiLineEdit->setText(apikey);
     });
     connect(saveButton, &QPushButton::clicked, this, &SettingsTrayMenu::saveAPI);
@@ -122,14 +116,7 @@ void SettingsTrayMenu::saveAPI() {
         apiLineEdit->setFocus();
     }
     else {
-        QFile file("apikey.txt");
-
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextStream stream(&file);
-            stream << apiLineEdit->text();
-
-            file.close();
-        }
+        weatherData->writeApiKeyToEnvFile(apiLineEdit->text());
         window->close();
     }
 }
