@@ -25,6 +25,25 @@ QString WeatherData::readApiKeyFromEnvFile() {
     return env->value("API_KEY").toString();
 }
 
+double WeatherData::readLonFromEnvFile() {
+    return env->value("LON").toDouble();
+}
+
+double WeatherData::readLatFromEnvFile() {
+    return env->value("LAT").toDouble();
+}
+
+QString WeatherData::readAddressFromEnvFile() {
+    return env->value("ADDRESS").toString();
+}
+
+void WeatherData::writeLocationToEnvFile(double lat, double lon, const QString &addr) {
+    env->setValue("LAT", lat);
+    env->setValue("LON", lon);
+    env->setValue("ADDRESS", addr);
+    emit savedLocation();
+}
+
 void WeatherData::getWeatherData() {
     if (reply) {
         qDebug() << "Прошлый запрос еще не завершился. Отменяем его...";
@@ -38,10 +57,10 @@ void WeatherData::getWeatherData() {
     }
 
     QUrl url("https://api.weatherapi.com/v1/forecast.json");
-
+    QString location = QString::number(readLatFromEnvFile()) + "," + QString::number(readLonFromEnvFile());
     QUrlQuery query;
     query.addQueryItem("key", readApiKeyFromEnvFile());
-    query.addQueryItem("q", "Moscow");
+    query.addQueryItem("q", location);
     query.addQueryItem("days", "1");
     query.addQueryItem("lang", "ru");
     url.setQuery(query);
@@ -73,7 +92,10 @@ void WeatherData::handleReply() {
         double currentTemp = currentObj["temp_c"].toDouble();
         QString currentCondition = currentObj["condition"].toObject()["text"].toString();
 
-        qDebug() << "=== СЕЙЧАС ===";
+        QJsonObject nameObj = rootObj["location"].toObject();
+        QString nameLocation = nameObj["name"].toString();
+
+        qDebug() << "=== СЕЙЧАС в " << nameLocation << " ===";
         qDebug() << "Текущая температура:" << currentTemp << "°C";
         qDebug() << "Текущее состояние:" << currentCondition << "\n";
 

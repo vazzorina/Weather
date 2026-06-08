@@ -114,7 +114,7 @@ Window {
 
             // 3. Горизонтальный блок почасового прогноза со скроллом
             Flickable {
-                Layout.fillWidth: true
+                Layout.preferredWidth: 410
                 Layout.preferredHeight: 110 // Немного увеличили, чтобы поместился скроллбар, если он появится
                 contentWidth: hourlyRow.implicitWidth // Важно: задает область прокрутки по ширине
                 clip: true // Обрезает элементы, которые выходят за границы зоны

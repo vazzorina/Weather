@@ -26,6 +26,9 @@ public:
     QWidget *window;
 
     WeatherData *weatherData = new WeatherData();
+    QLineEdit *latEdit;
+    QLineEdit *lonEdit;
+    QLineEdit *addressEdit;
 
 private:
     void saveAPI();

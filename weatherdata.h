@@ -17,9 +17,16 @@ public:
 
     void writeApiKeyToEnvFile(QString apikey);
     QString readApiKeyFromEnvFile();
+    double readLatFromEnvFile();
+    double readLonFromEnvFile();
+    QString readAddressFromEnvFile();
+    Q_INVOKABLE void writeLocationToEnvFile(double lat, double lon, const QString &addr = "");
 
     void getWeatherData();
     void handleReply();
+
+signals:
+    void savedLocation();
 };
 
 #endif // WEATHERDATA_H
