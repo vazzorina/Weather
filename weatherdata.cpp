@@ -125,12 +125,14 @@ void WeatherData::handleReply() {
                 double temp = hourObj["temp_c"].toDouble(); // получаем температуру для i-го часа
 
                 QString conditionText = hourObj["condition"].toObject()["text"].toString(); // получаем текстовое описание погоды
+                QString iconCode = hourObj["condition"].toObject()["code"].toString();
 
                 // выводим отформатированные данные о погоде
-                qDebug() << QString("[%1] : %2°C — %3")
+                qDebug() << QString("[%1] : %2°C — %3 (code: %4)")
                                 .arg(formattedTime)
                                 .arg(temp, 0, 'f', 1)
-                                .arg(conditionText);
+                                .arg(conditionText)
+                                .arg(iconCode);
             }
             qDebug() << "======================================";
 

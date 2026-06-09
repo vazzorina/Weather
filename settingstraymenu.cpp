@@ -211,17 +211,21 @@ SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
 }
 
 void SettingsTrayMenu::saveAPI() {
-    if (apiLineEdit->text().isEmpty()) {
+    QString adr = weatherData->readAddressFromEnvFile();
+    double lat = weatherData->readLatFromEnvFile();
+    double lon = weatherData->readLonFromEnvFile();
+    if (apiLineEdit->text().isEmpty() or latEdit->text() == "0" or lonEdit->text() == "0" or addressEdit->text().isEmpty()) {
         QMessageBox::warning(window,
-                            tr("Не введен API-ключ!"),
-                            tr("Чтобы сохранить API-ключ, сначала введите его в соответствующее поле"),
+                            tr("Не введен API-ключ или не указано местоположение!"),
+                            tr("Чтобы сохранить API-ключ, сначала введите его в соответствующее поле.\n"
+                                "Чтобы указать местоположение, выберите точку на карте или введите адрес."),
                             QMessageBox::Ok);
         apiLineEdit->setFocus();
     }
     else {
-        if (weatherData->lat != weatherData->readLatFromEnvFile() or
-            weatherData->lon != weatherData->readLonFromEnvFile() or
-            weatherData->address != weatherData->readAddressFromEnvFile()) {
+        if (weatherData->lat != lat or latEdit->text() != QString::number(lat) or
+            weatherData->lon != lon or lonEdit->text() != QString::number(lon) or
+            weatherData->address != adr or addressEdit->text() != adr) {
             weatherData->writeLocationToEnvFile();
         }
         if (apiLineEdit->text() != weatherData->readApiKeyFromEnvFile()){

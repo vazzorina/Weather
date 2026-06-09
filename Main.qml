@@ -24,14 +24,9 @@ Window {
         id: backgroundRect
         anchors.fill: parent
         color: "transparent"
-        // border.color: Qt.rgba(171, 185, 209, 0.8)
-        // border.width: 3
-        // radius: 30
         Image {
             source: "qrc:qt/qml/Weather/images/background.png"
             anchors.fill: parent
-            // width: 450
-            // height: 400
         }
 
         // Главный вертикальный слой для всего контента
