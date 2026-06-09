@@ -30,7 +30,7 @@ Rectangle {
                     var loc = get(0)
                     map.center = loc.coordinate
                     mapMarker.coordinate = loc.coordinate
-                    weatherData.writeLocationToEnvFile(loc.coordinate.latitude, loc.coordinate.longitude, loc.address.text)
+                    weatherData.saveLocationFromQml(loc.coordinate.latitude, loc.coordinate.longitude, loc.address.text)
                 } else {
                     errorPopup.show("Ничего не найдено", "К сожалению, указанный адрес не существует. Проверьте орфографию.")
                 }

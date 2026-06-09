@@ -20,10 +20,14 @@ public:
     double readLatFromEnvFile();
     double readLonFromEnvFile();
     QString readAddressFromEnvFile();
-    Q_INVOKABLE void writeLocationToEnvFile(double lat, double lon, const QString &addr = "");
+    Q_INVOKABLE void saveLocationFromQml(double latitude, double lontitude, const QString &addr);
+    void writeLocationToEnvFile();
 
     void getWeatherData();
     void handleReply();
+    double lat = 0;
+    double lon = 0;
+    QString address = "";
 
 signals:
     void savedLocation();

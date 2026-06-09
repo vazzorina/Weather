@@ -36,12 +36,18 @@ double WeatherData::readLatFromEnvFile() {
 QString WeatherData::readAddressFromEnvFile() {
     return env->value("ADDRESS").toString();
 }
+void WeatherData::saveLocationFromQml(double latitude, double lontitude, const QString &addr) {
+    lat = latitude;
+    lon = lontitude;
+    address = addr;
+    emit savedLocation();
+}
 
-void WeatherData::writeLocationToEnvFile(double lat, double lon, const QString &addr) {
+void WeatherData::writeLocationToEnvFile() {
     env->setValue("LAT", lat);
     env->setValue("LON", lon);
-    env->setValue("ADDRESS", addr);
-    emit savedLocation();
+    env->setValue("ADDRESS", address);
+
 }
 
 void WeatherData::getWeatherData() {

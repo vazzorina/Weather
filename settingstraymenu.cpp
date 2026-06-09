@@ -202,9 +202,9 @@ SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
     connect(cancelButton, &QPushButton::clicked, window, [=]() { window->close(); });
 
     connect(weatherData, &WeatherData::savedLocation, this, [=]() {
-        addressEdit->setText(weatherData->readAddressFromEnvFile());
-        latEdit->setText(QString::number(weatherData->readLatFromEnvFile()));
-        lonEdit->setText(QString::number(weatherData->readLonFromEnvFile()));
+        addressEdit->setText(weatherData->address);
+        latEdit->setText(QString::number(weatherData->lat));
+        lonEdit->setText(QString::number(weatherData->lon));
     });
 
     systemTrayIcon->show();
@@ -219,8 +219,16 @@ void SettingsTrayMenu::saveAPI() {
         apiLineEdit->setFocus();
     }
     else {
-        weatherData->writeApiKeyToEnvFile(apiLineEdit->text());
+        if (weatherData->lat != weatherData->readLatFromEnvFile() or
+            weatherData->lon != weatherData->readLonFromEnvFile() or
+            weatherData->address != weatherData->readAddressFromEnvFile()) {
+            weatherData->writeLocationToEnvFile();
+        }
+        if (apiLineEdit->text() != weatherData->readApiKeyFromEnvFile()){
+            weatherData->writeApiKeyToEnvFile(apiLineEdit->text());
+        }
         weatherData->getWeatherData();
+
         window->close();
     }
 }
