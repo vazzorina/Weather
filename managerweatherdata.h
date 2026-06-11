@@ -24,8 +24,6 @@ class ManagerWeatherData : public QObject
 public:
     explicit ManagerWeatherData(QObject *parent = nullptr);
 
-
-
     //геттеры
     QString cityName() const { return m_cityName; }
     QString tempNow() const { return m_tempNow; }

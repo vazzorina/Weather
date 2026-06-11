@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDebug>
+#include <QTimer>
 
 WeatherData::WeatherData(QObject *parent) : QObject{parent}
 {
@@ -19,6 +20,16 @@ WeatherData::WeatherData(QObject *parent) : QObject{parent}
     lat = readLatFromEnvFile();
     lon = readLonFromEnvFile();
     address = readAddressFromEnvFile();
+
+    getWeatherData();
+
+    QTimer *timer = new QTimer(this);
+    QObject::connect(timer, &QTimer::timeout, this, [=]() {
+        getWeatherData();
+        qDebug() << "Отправка запроса";
+    });
+    timer->start(1800000);
+
 }
 
 void WeatherData::writeApiKeyToEnvFile(QString apikey) {
