@@ -156,9 +156,9 @@ SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
     addressLayout->addWidget(addressEdit, 1);  // Поле ввода на всю ширину
     mainLocationLayout->addLayout(addressLayout);
 
-    addressEdit->setText(weatherData->readAddressFromEnvFile());
-    latEdit->setText(QString::number(weatherData->readLatFromEnvFile()));
-    lonEdit->setText(QString::number(weatherData->readLonFromEnvFile()));
+    addressEdit->setText(weatherData->address);
+    latEdit->setText(QString::number(weatherData->lat));
+    lonEdit->setText(QString::number(weatherData->lon));
 
     // 4. Добавляем собранную страницу со всемдержимым внутрь вкладки
     tabWidget->addTab(locationPage, tr("Местоположение"));

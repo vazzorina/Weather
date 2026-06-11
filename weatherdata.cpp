@@ -15,6 +15,10 @@ WeatherData::WeatherData(QObject *parent) : QObject{parent}
     env = new QSettings(".env", QSettings::IniFormat);
     manager = new QNetworkAccessManager();
     reply = nullptr;
+
+    lat = readLatFromEnvFile();
+    lon = readLonFromEnvFile();
+    address = readAddressFromEnvFile();
 }
 
 void WeatherData::writeApiKeyToEnvFile(QString apikey) {
@@ -54,6 +58,8 @@ void WeatherData::getWeatherData() {
     if (reply) {
         qDebug() << "Прошлый запрос еще не завершился. Отменяем его...";
 
+        weatherModel->clear();
+
         // отключаем сигналы, чтобы лямбда старого запроса не сработала при аборте
         reply->disconnect();
 
@@ -89,21 +95,25 @@ void WeatherData::handleReply() {
     }
 
     if (reply->error() == QNetworkReply::NoError) {
+        weatherModel->clear(); // чистим модель от предыдущих данных
+
         QByteArray response = reply->readAll();
         QJsonDocument jsonDoc = QJsonDocument::fromJson(response);
         QJsonObject rootObj = jsonDoc.object();
 
         // получаем данные о погоде в текущий момент
-        QJsonObject currentObj = rootObj["current"].toObject();
-        double currentTemp = currentObj["temp_c"].toDouble();
-        QString currentCondition = currentObj["condition"].toObject()["text"].toString();
+        QJsonObject currentObj = rootObj["current"].toObject(); // массив с данными о текущем состоянии погоды
+        int currentTemp = static_cast<int>(currentObj["temp_c"].toDouble()); // текущая температура
+        QString currentCondition = currentObj["condition"].toObject()["text"].toString(); // описание текущей погоды
+        QString mainIconCode = "qrc:qt/qml/Weather/images/" + QString::number(currentObj["condition"].toObject()["code"].toInt()) + ".png"; // сразу прописываем путь до нужно икокнки погоды
+        QString nameLocation = rootObj["location"].toObject()["name"].toString(); // название местоположения
 
-        QJsonObject nameObj = rootObj["location"].toObject();
-        QString nameLocation = nameObj["name"].toString();
+        // передаем текущую погоду в qml интерфейс
+        mngWD->setCityName(nameLocation);
+        mngWD->setCondition(currentCondition);
+        mngWD->setTempNow(QString::number(static_cast<int>(currentTemp)));
+        mngWD->setIconPath(mainIconCode);
 
-        qDebug() << "=== СЕЙЧАС в " << nameLocation << " ===";
-        qDebug() << "Текущая температура:" << currentTemp << "°C";
-        qDebug() << "Текущее состояние:" << currentCondition << "\n";
 
         // получаем данные о будующей погоде для текущего дня
         QJsonObject forecastObj = rootObj["forecast"].toObject();
@@ -113,28 +123,21 @@ void WeatherData::handleReply() {
             QJsonObject todayObj = forecastDayArray.at(0).toObject();
             QJsonArray hoursArray = todayObj["hour"].toArray(); // получаем массив с 24-х часовым прогнозом погоды
 
-            qDebug() << "=== ПОЧАСОВОЙ ПРОГНОЗ НА СЕГОДНЯ ===";
-
             for (int i = 0; i < hoursArray.size(); ++i) {
                 QJsonObject hourObj = hoursArray.at(i).toObject();
 
                 // получаем время и выводим в формате (00:00 - часы и минуты)
-                QString timeString = hourObj["time"].toString();
-                QString formattedTime = timeString.right(5);
-
-                double temp = hourObj["temp_c"].toDouble(); // получаем температуру для i-го часа
-
+                QString time = hourObj["time"].toString().right(5);
+                int temp = static_cast<int>(hourObj["temp_c"].toDouble()); // получаем температуру для i-го часа
                 QString conditionText = hourObj["condition"].toObject()["text"].toString(); // получаем текстовое описание погоды
-                QString iconCode = hourObj["condition"].toObject()["code"].toString();
+                QString iconPath = "qrc:qt/qml/Weather/images/" + QString::number(hourObj["condition"].toObject()["code"].toInt()) + ".png";
 
-                // выводим отформатированные данные о погоде
-                qDebug() << QString("[%1] : %2°C — %3 (code: %4)")
-                                .arg(formattedTime)
-                                .arg(temp, 0, 'f', 1)
-                                .arg(conditionText)
-                                .arg(iconCode);
+                // создаем элемент модели и передаем в модель для qml
+                WeatherItem w_item {time, temp, iconPath};
+                weatherModel->addWeatherItem(w_item);
             }
-            qDebug() << "======================================";
+
+            qDebug() << "Заполнение модели закончено";
 
         }
     } else {

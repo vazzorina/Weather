@@ -37,7 +37,7 @@ Window {
 
             // 1. Заголовок города
             Text {
-                text: "Сейчас в Москве"
+                text: managerWeather.cityName
                 font.pixelSize: 12
                 color: mainFontColor
                 font.family: mainFontFamily
@@ -62,7 +62,7 @@ Window {
                         Layout.alignment: Qt.AlignVCenter
                         anchors.centerIn: parent
                         Image {
-                            source: "qrc:qt/qml/Weather/images/sun.png"
+                            source: managerWeather.iconPath
                             fillMode: Image.PreserveAspectFit
                             Layout.alignment: Qt.AlignVCenter
                             anchors.centerIn: parent
@@ -77,7 +77,7 @@ Window {
                     Layout.alignment: Qt.AlignTop
                     Layout.topMargin: 10
                     Text {
-                        text: "Вс, 6 Июня"
+                        text: managerWeather.currentDate
                         font.pixelSize: 16
                         color: mainFontColor
                         font.family: mainFontFamily
@@ -87,7 +87,7 @@ Window {
                     }
 
                     Text {
-                        text: "+10℃"
+                        text: managerWeather.tempNow + "℃"
                         font.pixelSize: 48
                         color: mainFontColor
                         font.family: mainFontFamily
@@ -96,7 +96,7 @@ Window {
                     }
 
                     Text {
-                        text: "Местами возможен небольшой дождь со снегом Местами возможен небольшой дождь со снегом"
+                        text: managerWeather.condition
                         font.pixelSize: 12
                         color: mainFontColor
                         font.family: mainFontFamily
@@ -121,7 +121,7 @@ Window {
 
                     Repeater {
                         // Здесь вместо 5 в реальном приложении будет ваша модель данных (например, ListModel или массив из C++)
-                        model: 24
+                        model: weatherModel
 
                         delegate: Rectangle {
                             width: 80
@@ -143,7 +143,7 @@ Window {
 
                                 Text {
                                     // modelData хранит индекс или объект, если используется сложная модель
-                                    text: index + ":00"
+                                    text: model.time
                                     font.pixelSize: 12
                                     font.family: mainFontFamily
                                     color: mainFontColor
@@ -151,7 +151,7 @@ Window {
                                 }
 
                                 Image {
-                                    source: "qrc:qt/qml/Weather/images/rain.png"
+                                    source: model.icon
                                     Layout.preferredWidth: 60
                                     Layout.preferredHeight: 60
                                     fillMode: Image.Stretch
@@ -159,7 +159,7 @@ Window {
                                 }
 
                                 Text {
-                                    text: index + "℃"
+                                    text: model.temp + "℃"
                                     font.pixelSize: 14
                                     font.bold: true
                                     font.family: mainFontFamily

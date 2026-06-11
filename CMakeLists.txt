@@ -22,16 +22,22 @@ qt_add_qml_module(appWeather
         managermovingicons.h managermovingicons.cpp
         settingstraymenu.h settingstraymenu.cpp
         weatherdata.h weatherdata.cpp
-
+        managerweatherdata.h managerweatherdata.cpp
 
     RESOURCES
         images/tray-icon-32x32.png
         images/background.png
         images/hour-background.png
         images/ramka2.png
-        images/sun.png
-        images/rain.png
         images/map-marker.png
+        images/1000.png
+        images/1003.png
+        images/1006.png
+        images/1009.png
+        images/1030.png
+        images/1063.png
+        images/1066.png
+
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

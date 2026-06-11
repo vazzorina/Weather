@@ -7,13 +7,19 @@
 
 #include "managermovingicons.h"
 #include "settingstraymenu.h"
+#include "managerweatherdata.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
-    SettingsTrayMenu *stm = new SettingsTrayMenu();
+    SettingsTrayMenu *stm = new SettingsTrayMenu(&app);
+    ManagerWeatherData *managerWeather = new ManagerWeatherData(&app);
+    WeatherModel *weatherModel = new WeatherModel(&app);
+
+    stm->weatherData->mngWD = managerWeather;
+    stm->weatherData->weatherModel = weatherModel;
 
     QObject::connect(stm->actionExit, &QAction::triggered, &app, QApplication::exit);
 
@@ -27,7 +33,9 @@ int main(int argc, char *argv[])
 
     ManagerMovingIcons mmi;
     engine.rootContext()->setContextProperty("managerMovingIcons", &mmi);
-
+    engine.rootContext()->setContextProperty("weatherData", stm->weatherData);
+    engine.rootContext()->setContextProperty("managerWeather", managerWeather);
+    engine.rootContext()->setContextProperty("weatherModel", weatherModel);
     engine.loadFromModule("Weather", "Main");
 
 

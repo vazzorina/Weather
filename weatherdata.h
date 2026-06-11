@@ -4,12 +4,16 @@
 #include <QObject>
 #include <QSettings>
 #include <QNetworkAccessManager>
+#include "managerweatherdata.h"
 
 class WeatherData : public QObject
 {
     Q_OBJECT
 public:
     explicit WeatherData(QObject* parent = nullptr);
+
+    ManagerWeatherData *mngWD = nullptr;
+    WeatherModel *weatherModel = nullptr;
 
     QSettings *env;
     QNetworkAccessManager *manager;
@@ -25,9 +29,9 @@ public:
 
     void getWeatherData();
     void handleReply();
-    double lat = 0;
-    double lon = 0;
-    QString address = "";
+    double lat;
+    double lon;
+    QString address;
 
 signals:
     void savedLocation();
