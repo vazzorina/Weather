@@ -57,7 +57,7 @@ Window {
                     height: 200
                     color: "transparent"
                     Image {
-                        source: "qrc:qt/qml/Weather/images/ramka2.png"
+                        source: "qrc:qt/qml/Weather/images/ramka.png"
                         fillMode: Image.PreserveAspectFit
                         Layout.alignment: Qt.AlignVCenter
                         anchors.centerIn: parent

@@ -17,7 +17,7 @@ SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
 {
     // --- ТРЕЙ (без изменений) ---
     systemTrayIcon = new QSystemTrayIcon();
-    systemTrayIcon->setIcon(QIcon(":qt/qml/Weather/images/tray-icon-32x32.png"));
+    systemTrayIcon->setIcon(QIcon(":qt/qml/Weather/images/tray-icon.png"));
     systemTrayIcon->setToolTip("Weather");
 
     menuTrayIcon = new QMenu();
