@@ -9,6 +9,7 @@ struct WeatherItem {
     QString time;   // время
     int temp;       // температура
     QString icon;   // путь до иконки
+    bool currentHour; // соответствует ли текущему часу для установки выделения в виде другой карточки
 };
 
 class ManagerWeatherData : public QObject
@@ -76,7 +77,8 @@ public:
     enum WeatherRoles {
         TimeRole = Qt::UserRole + 1,
         TempRole,
-        IconRole
+        IconRole,
+        CurrentHourRole
     };
 
     explicit WeatherModel(QObject *parent = nullptr) : QAbstractListModel(parent) {}
@@ -98,6 +100,7 @@ public:
         case TimeRole: return item.time;
         case TempRole: return item.temp;
         case IconRole: return item.icon;
+        case CurrentHourRole: return item.currentHour;
         default: return QVariant();
         }
     }
@@ -108,6 +111,7 @@ public:
         roles[TimeRole] = "time"; // Теперь в QML доступно свойство model.time
         roles[TempRole] = "temp"; // model.temp
         roles[IconRole] = "icon"; // model.icon
+        roles[CurrentHourRole] = "currentHour";
         return roles;
     }
 

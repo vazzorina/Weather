@@ -171,7 +171,8 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     buttonLayout->setSpacing(10);
     QPushButton *saveButton = new QPushButton(tr("Сохранить и закрыть"), window);
     QPushButton *cancelButton = new QPushButton(tr("Отмена"), window);
-    saveButton->setCursor(Qt::PointingHandCursor);
+    saveButton->setFocusPolicy(Qt::NoFocus);
+    cancelButton->setFocusPolicy(Qt::NoFocus);
 
     buttonLayout->addStretch();
     buttonLayout->addWidget(saveButton);

@@ -138,7 +138,7 @@ Window {
                             radius: 15
 
                             Image {
-                                source: "qrc:qt/qml/Weather/images/hour-background.png"
+                                source: model.currentHour ? "qrc:qt/qml/Weather/images/current-hour-background.png" : "qrc:qt/qml/Weather/images/hour-background.png"
                                 anchors.fill: parent
                                 width: 450
                                 height: 400
