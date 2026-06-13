@@ -126,5 +126,7 @@ std::pair<int, int> ManagerMovingIcons::getNewXY(int qmlWindX, int qmlWindWidth,
             if (dx1 > dy1) return std::pair(localPointX, qmlWindY - spacingY);
             else return std::pair(qmlWindX - spacingX, localPointY);
         }
+
+        qDebug() << "Перемещены иконки под основным окном";
     }
 }

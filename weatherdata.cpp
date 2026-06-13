@@ -81,6 +81,7 @@ QString WeatherData::readAddressFromEnvFile() {
     return env->value("ADDRESS").toString();
 }
 void WeatherData::saveLocationFromQml(double latitude, double lontitude, const QString &addr) {
+    qDebug() << "Передача местоположения из QML в С++";
     lat = latitude;
     lon = lontitude;
     address = addr;
@@ -94,34 +95,48 @@ void WeatherData::writeLocationToEnvFile() {
 }
 
 void WeatherData::getWeatherData() {
-    if (reply) {
-        qDebug() << "Прошлый запрос еще не завершился. Отменяем его...";
-
-        weatherModel->clear();
-
-        // отключаем сигналы, чтобы лямбда старого запроса не сработала при аборте
-        reply->disconnect();
-
-        reply->abort();      // прерываем сетевой поток
-        reply->deleteLater(); // удаляем объект из памяти
-        reply = nullptr;
+    if (readApiKeyFromEnvFile().isEmpty() and (readLatFromEnvFile() == 0 or readLonFromEnvFile() == 0)) {
+        mngWD->setCondition("Введите API-ключ в настройках приложения");
+        mngWD->setCityName("Не указано");
     }
+    else if (readApiKeyFromEnvFile().isEmpty()) {
+        mngWD->setCondition("Введите API-ключ в настройках приложения");
+    }
+    else if (readLatFromEnvFile() == 0 or readLonFromEnvFile() == 0) {
+        mngWD->setCondition("Укажите местоположение в насйтроках приложения");
+    }
+    else {
+        if (reply) {
+            qDebug() << "Прошлый запрос еще в работе - завершаем его";
 
-    QUrl url("https://api.weatherapi.com/v1/forecast.json");
-    QString location = QString::number(readLatFromEnvFile()) + "," + QString::number(readLonFromEnvFile());
-    QUrlQuery query;
-    query.addQueryItem("key", readApiKeyFromEnvFile());
-    query.addQueryItem("q", location);
-    query.addQueryItem("days", "1");
-    query.addQueryItem("lang", "ru");
-    url.setQuery(query);
+            weatherModel->clear();
 
-    QNetworkRequest request(url);
-    qDebug() << "Отправка запроса на WeatherAPI:" << url.toString();
+            // отключаем сигналы, чтобы лямбда старого запроса не сработала при аборте
+            reply->disconnect();
 
-    reply = manager->get(request);
+            reply->abort();      // прерываем сетевой поток
+            reply->deleteLater(); // удаляем объект из памяти
+            reply = nullptr;
+        }
 
-    QObject::connect(reply, &QNetworkReply::finished, this, &WeatherData::handleReply);
+        QUrl url("https://api.weatherapi.com/v1/forecast.json");
+        QString location = QString::number(readLatFromEnvFile()) + "," + QString::number(readLonFromEnvFile());
+        QUrlQuery query;
+        query.addQueryItem("key", readApiKeyFromEnvFile());
+        query.addQueryItem("q", location);
+        query.addQueryItem("days", "1");
+        query.addQueryItem("lang", "ru");
+        url.setQuery(query);
+
+        QNetworkRequest request(url);
+
+        qDebug() << "Отправка запроса";
+
+        reply = manager->get(request);
+
+        QObject::connect(reply, &QNetworkReply::finished, this, &WeatherData::handleReply);
+
+    }
 }
 
 
@@ -129,11 +144,13 @@ void WeatherData::handleReply() {
     if (!reply) return;
 
     if (reply->error() == QNetworkReply::OperationCanceledError) {
-        qDebug() << "Запрос был успешно отменен.";
+        qDebug() << "Предыдущий запрос отменен";
         return;
     }
 
     if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Получаем данные о погоде";
+
         weatherModel->clear(); // чистим модель от предыдущих данных
 
         QByteArray response = reply->readAll();
@@ -177,12 +194,11 @@ void WeatherData::handleReply() {
                 WeatherItem w_item {time, temp, iconPath, currentHour};
                 weatherModel->addWeatherItem(w_item);
             }
-
-            qDebug() << "Заполнение модели закончено";
-
         }
+        qDebug() << "Данные о погоде получены";
+
     } else {
-        qDebug() << "Ошибка запроса:" << reply->errorString();
+        qWarning() << "Ошибка запроса:" << reply->errorString();
     }
     reply->deleteLater();
     reply = nullptr;
