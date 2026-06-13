@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Window 2.2
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Window
 
 Window {
     property int screenX: Screen.desktopAvailableWidth

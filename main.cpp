@@ -64,6 +64,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
+    app.setWindowIcon(QIcon("qrc:/images/tray-icon.ico"));
+
     ManagerWeatherData *managerWeather = new ManagerWeatherData(&app);
     WeatherModel *weatherModel = new WeatherModel(&app);
     WeatherData *weatherData = new WeatherData(managerWeather, weatherModel, &app);
