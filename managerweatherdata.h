@@ -9,7 +9,6 @@ struct WeatherItem {
     QString time;   // время
     int temp;       // температура
     QString icon;   // путь до иконки
-    bool currentHour; // соответствует ли текущему часу для установки выделения в виде другой карточки
 };
 
 class ManagerWeatherData : public QObject
@@ -25,6 +24,8 @@ class ManagerWeatherData : public QObject
     Q_PROPERTY(int x_window READ x_window WRITE setX_window NOTIFY x_windowChanged FINAL)
     Q_PROPERTY(int y_window READ y_window WRITE setY_window NOTIFY y_windowChanged FINAL)
 
+    Q_PROPERTY(QString currentHour READ currentHour NOTIFY currentHourChanged FINAL)
+
 public:
     explicit ManagerWeatherData(QObject *parent = nullptr);
 
@@ -36,6 +37,7 @@ public:
     QString currentDate() const { return m_currentDate; }
     int x_window() const { return m_x_window; }
     int y_window() const { return m_y_window; }
+    QString currentHour() const { return m_currentHour; }
 
 public slots:
     //сеттеры
@@ -47,6 +49,7 @@ public slots:
     void setX_window(const int newX);
 
     void updateDate();
+    void updateCurrentHour();
 
 signals:
     void cityNameChanged();
@@ -56,6 +59,7 @@ signals:
     void currentDateChanged();
     void x_windowChanged();
     void y_windowChanged();
+    void currentHourChanged();
 
 private:
     QString m_cityName;
@@ -64,6 +68,7 @@ private:
     QString m_iconPath;
     QString m_currentDate;
     int m_x_window, m_y_window;
+    QString m_currentHour;
 };
 
 
@@ -77,8 +82,7 @@ public:
     enum WeatherRoles {
         TimeRole = Qt::UserRole + 1,
         TempRole,
-        IconRole,
-        CurrentHourRole
+        IconRole
     };
 
     explicit WeatherModel(QObject *parent = nullptr) : QAbstractListModel(parent) {}
@@ -100,7 +104,6 @@ public:
         case TimeRole: return item.time;
         case TempRole: return item.temp;
         case IconRole: return item.icon;
-        case CurrentHourRole: return item.currentHour;
         default: return QVariant();
         }
     }
@@ -111,7 +114,6 @@ public:
         roles[TimeRole] = "time"; // Теперь в QML доступно свойство model.time
         roles[TempRole] = "temp"; // model.temp
         roles[IconRole] = "icon"; // model.icon
-        roles[CurrentHourRole] = "currentHour";
         return roles;
     }
 

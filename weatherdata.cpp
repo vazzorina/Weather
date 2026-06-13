@@ -163,7 +163,6 @@ void WeatherData::handleReply() {
         QString currentCondition = currentObj["condition"].toObject()["text"].toString(); // описание текущей погоды
         QString mainIconCode = "qrc:qt/qml/Weather/images/" + QString::number(currentObj["condition"].toObject()["code"].toInt()) + ".png"; // сразу прописываем путь до нужно икокнки погоды
         QString nameLocation = rootObj["location"].toObject()["name"].toString(); // название местоположения
-        QString currentTime = rootObj["location"].toObject()["localtime"].toString().right(5).left(2);
 
         // передаем текущую погоду в qml интерфейс
         mngWD->setCityName(nameLocation);
@@ -188,10 +187,9 @@ void WeatherData::handleReply() {
                 int temp = static_cast<int>(hourObj["temp_c"].toDouble()); // получаем температуру для i-го часа
                 QString conditionText = hourObj["condition"].toObject()["text"].toString(); // получаем текстовое описание погоды
                 QString iconPath = "qrc:qt/qml/Weather/images/" + QString::number(hourObj["condition"].toObject()["code"].toInt()) + ".png";
-                bool currentHour = time.left(2) == currentTime ? true : false;
 
                 // создаем элемент модели и передаем в модель для qml
-                WeatherItem w_item {time, temp, iconPath, currentHour};
+                WeatherItem w_item {time, temp, iconPath};
                 weatherModel->addWeatherItem(w_item);
             }
         }

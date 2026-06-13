@@ -7,8 +7,12 @@ ManagerWeatherData::ManagerWeatherData(QObject *parent)
     : QObject{parent}
 {
     updateDate();
+    updateCurrentHour();
     QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &ManagerWeatherData::updateDate);
+    connect(timer, &QTimer::timeout, this, [=]() {
+        updateDate();
+        updateCurrentHour();
+    });
     timer->start(60000);
 }
 
@@ -63,5 +67,18 @@ void ManagerWeatherData::updateDate() {
     if (m_currentDate != formatted) {
         m_currentDate = formatted;
         emit currentDateChanged();
+    }
+}
+
+void ManagerWeatherData::updateCurrentHour() {
+    int current = QTime::currentTime().hour();
+
+    QString formatted = current < 10 ? "0" + QString::number(current) : QString::number(current);
+    formatted += ":00";
+
+    // eсли наступил новый день, меняем переменную и уведомляем QML
+    if (m_currentHour != formatted) {
+        m_currentHour = formatted;
+        emit currentHourChanged();
     }
 }
