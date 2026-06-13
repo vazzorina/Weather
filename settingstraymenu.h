@@ -14,7 +14,7 @@ class SettingsTrayMenu : public QObject
 {
     Q_OBJECT
 public:
-    explicit SettingsTrayMenu(QObject *parent = nullptr);
+    explicit SettingsTrayMenu(WeatherData *weather, QObject *parent = nullptr);
     QSystemTrayIcon *systemTrayIcon;
     QMenu *menuTrayIcon;
     QLineEdit *apiLineEdit;
@@ -25,7 +25,7 @@ public:
 
     QWidget *window;
 
-    WeatherData *weatherData = new WeatherData();
+    WeatherData *weatherData = nullptr;
     QLineEdit *latEdit;
     QLineEdit *lonEdit;
     QLineEdit *addressEdit;

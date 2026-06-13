@@ -21,6 +21,9 @@ class ManagerWeatherData : public QObject
     Q_PROPERTY(QString condition READ condition WRITE setCondition NOTIFY conditionChanged) //состояние погоды
     Q_PROPERTY(QString iconPath READ iconPath WRITE setIconPath NOTIFY iconPathChanged FINAL) //путь к иконке для текущей погоды
 
+    Q_PROPERTY(int x_window READ x_window WRITE setX_window NOTIFY x_windowChanged FINAL)
+    Q_PROPERTY(int y_window READ y_window WRITE setY_window NOTIFY y_windowChanged FINAL)
+
 public:
     explicit ManagerWeatherData(QObject *parent = nullptr);
 
@@ -30,6 +33,8 @@ public:
     QString condition() const { return m_condition; }
     QString iconPath() const { return m_iconPath; }
     QString currentDate() const { return m_currentDate; }
+    int x_window() const { return m_x_window; }
+    int y_window() const { return m_y_window; }
 
 public slots:
     //сеттеры
@@ -37,6 +42,8 @@ public slots:
     void setTempNow(const QString newTempNow);
     void setCondition(const QString newCondition);
     void setIconPath(const QString newIconPath);
+    void setY_window(const int newY);
+    void setX_window(const int newX);
 
     void updateDate();
 
@@ -46,6 +53,8 @@ signals:
     void conditionChanged();
     void iconPathChanged();
     void currentDateChanged();
+    void x_windowChanged();
+    void y_windowChanged();
 
 private:
     QString m_cityName;
@@ -53,6 +62,7 @@ private:
     QString m_condition;
     QString m_iconPath;
     QString m_currentDate;
+    int m_x_window, m_y_window;
 };
 
 

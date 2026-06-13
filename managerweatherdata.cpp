@@ -36,6 +36,20 @@ void ManagerWeatherData::setIconPath(const QString newIconPath) {
     emit iconPathChanged();
 }
 
+void ManagerWeatherData::setX_window(const int newX) {
+    if (m_x_window == newX) return;
+    m_x_window = newX;
+    emit x_windowChanged();
+}
+
+void ManagerWeatherData::setY_window(const int newY) {
+    if (m_y_window == newY) return;
+    m_y_window = newY;
+    emit y_windowChanged();
+}
+
+
+
 void ManagerWeatherData::updateDate() {
     QDate current = QDate::currentDate();
     QLocale ru(QLocale::Russian);

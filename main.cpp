@@ -14,12 +14,10 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
-    SettingsTrayMenu *stm = new SettingsTrayMenu(&app);
     ManagerWeatherData *managerWeather = new ManagerWeatherData(&app);
     WeatherModel *weatherModel = new WeatherModel(&app);
-
-    stm->weatherData->mngWD = managerWeather;
-    stm->weatherData->weatherModel = weatherModel;
+    WeatherData *weatherData = new WeatherData(managerWeather, weatherModel, &app);
+    SettingsTrayMenu *stm = new SettingsTrayMenu(weatherData, &app);
 
     QObject::connect(stm->actionExit, &QAction::triggered, &app, QApplication::exit);
 

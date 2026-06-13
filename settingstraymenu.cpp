@@ -13,7 +13,7 @@
 #include <QQuickWidget>
 #include <QQmlContext>
 
-SettingsTrayMenu::SettingsTrayMenu(QObject *parent) : QObject{parent}
+SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObject{parent}, weatherData{weather}
 {
     // --- ТРЕЙ (без изменений) ---
     systemTrayIcon = new QSystemTrayIcon();

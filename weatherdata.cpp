@@ -10,16 +10,23 @@
 #include <QJsonArray>
 #include <QDebug>
 #include <QTimer>
+#include "managerweatherdata.h"
 
-WeatherData::WeatherData(QObject *parent) : QObject{parent}
+WeatherData::WeatherData(ManagerWeatherData *managerWeather, WeatherModel *model, QObject *parent)
+    : QObject{parent}, mngWD{managerWeather}, weatherModel{model}
 {
     env = new QSettings(".env", QSettings::IniFormat);
+    checkingEnvFile();
+
     manager = new QNetworkAccessManager();
     reply = nullptr;
 
     lat = readLatFromEnvFile();
     lon = readLonFromEnvFile();
     address = readAddressFromEnvFile();
+    readXYWindow();
+    mngWD->setX_window(x);
+    mngWD->setY_window(y);
 
     getWeatherData();
 
@@ -30,6 +37,28 @@ WeatherData::WeatherData(QObject *parent) : QObject{parent}
     });
     timer->start(1800000);
 
+}
+
+void WeatherData::checkingEnvFile() {
+    if(!env->contains("API_KEY")) writeApiKeyToEnvFile("");
+    if(!env->contains("X_WINDOW")) writeXWindow(0);
+    if(!env->contains("Y_WINDOW")) writeYWindow(0);
+    if(!env->contains("LAT")) env->setValue("LAT", 0);
+    if(!env->contains("LON")) env->setValue("LON", 0);
+    if(!env->contains("ADDRESS")) env->setValue("ADDRESS", "");
+}
+
+void WeatherData::readXYWindow() {
+    x = env->value("X_WINDOW").toInt();
+    y = env->value("Y_WINDOW").toInt();
+}
+
+void WeatherData::writeXWindow(int newX) {
+    env->setValue("X_WINDOW", newX);
+}
+
+void WeatherData::writeYWindow(int newY) {
+    env->setValue("Y_WINDOW", newY);
 }
 
 void WeatherData::writeApiKeyToEnvFile(QString apikey) {
@@ -62,7 +91,6 @@ void WeatherData::writeLocationToEnvFile() {
     env->setValue("LAT", lat);
     env->setValue("LON", lon);
     env->setValue("ADDRESS", address);
-
 }
 
 void WeatherData::getWeatherData() {

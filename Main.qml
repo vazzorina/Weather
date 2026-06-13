@@ -13,8 +13,16 @@ Window {
     id: wind
     width: 450
     height: 400
-    x: screenX - width
-    y: 0
+    x: managerWeather.x_window
+    y: managerWeather.y_window
+
+    onXChanged: {
+        weatherData.writeXWindow(wind.x)
+    }
+
+    onYChanged: {
+        weatherData.writeYWindow(wind.y)
+    }
 
     visible: true
     color: "transparent"
