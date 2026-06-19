@@ -37,6 +37,7 @@ public:
     double lon;
     QString address;
     int x, y;
+    QString locale;
 
 signals:
     void savedLocation();

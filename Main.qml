@@ -145,6 +145,8 @@ Window {
                                 height: 400
                             }
 
+                            focus: model.time === managerWeather.currentHour
+
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.margins: 10

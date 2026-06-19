@@ -96,14 +96,14 @@ void WeatherData::writeLocationToEnvFile() {
 
 void WeatherData::getWeatherData() {
     if (readApiKeyFromEnvFile().isEmpty() and (readLatFromEnvFile() == 0 or readLonFromEnvFile() == 0)) {
-        mngWD->setCondition("Введите API-ключ в настройках приложения");
-        mngWD->setCityName("Не указано");
+        mngWD->setCondition(tr("Введите API-ключ в настройках приложения"));
+        mngWD->setCityName(tr("Не указано"));
     }
     else if (readApiKeyFromEnvFile().isEmpty()) {
-        mngWD->setCondition("Введите API-ключ в настройках приложения");
+        mngWD->setCondition(tr("Введите API-ключ в настройках приложения"));
     }
     else if (readLatFromEnvFile() == 0 or readLonFromEnvFile() == 0) {
-        mngWD->setCondition("Укажите местоположение в насйтроках приложения");
+        mngWD->setCondition(tr("Укажите местоположение в насйтроках приложения"));
     }
     else {
         if (reply) {
@@ -122,15 +122,16 @@ void WeatherData::getWeatherData() {
         QUrl url("https://api.weatherapi.com/v1/forecast.json");
         QString location = QString::number(readLatFromEnvFile()) + "," + QString::number(readLonFromEnvFile());
         QUrlQuery query;
+        locale = tr("ru");
         query.addQueryItem("key", readApiKeyFromEnvFile());
         query.addQueryItem("q", location);
         query.addQueryItem("days", "1");
-        query.addQueryItem("lang", "ru");
+        query.addQueryItem("lang", locale);
         url.setQuery(query);
 
         QNetworkRequest request(url);
 
-        qDebug() << "Отправка запроса";
+        qDebug() << "Отправка запроса на WeatherAPI";
 
         reply = manager->get(request);
 

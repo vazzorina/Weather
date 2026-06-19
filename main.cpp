@@ -12,6 +12,7 @@
 #include "managermovingicons.h"
 #include "settingstraymenu.h"
 #include "managerweatherdata.h"
+#include "translationmanager.h"
 
 static QMutex logMutex;
 void weatherMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -64,12 +65,15 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
+    TranslationManager *translator = new TranslationManager(&app);
+    translator->setLanguage();
+
     app.setWindowIcon(QIcon("qrc:/images/tray-icon.ico"));
 
     ManagerWeatherData *managerWeather = new ManagerWeatherData(&app);
     WeatherModel *weatherModel = new WeatherModel(&app);
     WeatherData *weatherData = new WeatherData(managerWeather, weatherModel, &app);
-    SettingsTrayMenu *stm = new SettingsTrayMenu(weatherData, &app);
+    SettingsTrayMenu *stm = new SettingsTrayMenu(weatherData, translator);
 
     QObject::connect(stm->actionExit, &QAction::triggered, &app, QApplication::exit);
 
@@ -80,6 +84,15 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
+
+    QObject::connect(translator, &TranslationManager::languageChanged, &engine, [&engine]() {
+        engine.retranslate();
+    });
+
+    QObject::connect(translator, &TranslationManager::languageChanged, &app, [=]() {
+
+        //weatherData->getWeatherData();
+    });
 
     ManagerMovingIcons mmi;
     engine.rootContext()->setContextProperty("managerMovingIcons", &mmi);

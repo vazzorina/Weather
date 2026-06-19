@@ -56,8 +56,8 @@ void ManagerWeatherData::setY_window(const int newY) {
 
 void ManagerWeatherData::updateDate() {
     QDate current = QDate::currentDate();
-    QLocale ru(QLocale::Russian);
-    QString formatted = ru.toString(current, "ddd, d MMMM");
+    QLocale lo(QLocale::Russian);
+    QString formatted = lo.toString(current, "ddd, d MMMM");
 
     if (!formatted.isEmpty()) {
         formatted[0] = formatted[0].toUpper();

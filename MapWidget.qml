@@ -15,7 +15,7 @@ Rectangle {
         name: "osm"
         PluginParameter {
             name: "osm.useragent"
-            value: "MyWeatherApp/1.0"
+            value: "WeatherApp/1.0"
         }
     }
 
@@ -32,10 +32,10 @@ Rectangle {
                     mapMarker.coordinate = loc.coordinate
                     weatherData.saveLocationFromQml(loc.coordinate.latitude, loc.coordinate.longitude, loc.address.text)
                 } else {
-                    errorPopup.show("Ничего не найдено", "К сожалению, указанный адрес не существует. Проверьте орфографию.")
+                    errorPopup.show(qsTr("Ничего не найдено"), qsTr("К сожалению, указанный адрес не существует. Проверьте орфографию."))
                 }
             } else if (status === GeocodeModel.Error) {
-                errorPopup.show("Ошибка сети", "Не удалось связаться с сервером геокодинга. Ошибка: " + errorString)
+                errorPopup.show(qsTr("Ошибка сети"), qsTr("Не удалось связаться с сервером геокодинга. Ошибка: ") + errorString)
             }
         }
     }
@@ -123,7 +123,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: "OK"
+                        text: qsTr("Понятно")
                         color: "white"
                         font.bold: true
                         font.pixelSize: 12
@@ -239,7 +239,7 @@ Rectangle {
         TextField {
             id: searchField
             Layout.fillWidth: true
-            placeholderText: "Введите адрес для поиска..."
+            placeholderText: qsTr("Введите адрес для поиска...")
             color: "#222831"
             placeholderTextColor: "#9A9EAB"
             font.pixelSize: 12
@@ -280,7 +280,7 @@ Rectangle {
             }
 
             Text {
-                text: "Найти"
+                text: qsTr("Найти")
                 color: "white"
                 font.bold: true
                 font.pixelSize: 12

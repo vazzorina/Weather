@@ -12,8 +12,11 @@
 #include <QTabWidget> // Добавлено вместо QListWidget и QStackedWidget
 #include <QQuickWidget>
 #include <QQmlContext>
+#include <QComboBox>
+#include <QEvent>
 
-SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObject{parent}, weatherData{weather}
+SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, TranslationManager *translate, QWidget *parent)
+    : QWidget{parent}, weatherData{weather}, translator{translate}
 {
     // --- ТРЕЙ (без изменений) ---
     systemTrayIcon = new QSystemTrayIcon();
@@ -24,13 +27,13 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     systemTrayIcon->setContextMenu(menuTrayIcon);
 
     actionSettings = new QAction();
-    actionSettings->setText("Настройки");
+
 
     actionSearchCity = new QAction();
-    actionSearchCity->setText("Выбрать местоположение");
+
 
     actionExit = new QAction();
-    actionExit->setText("Закрыть виджет");
+
 
     menuTrayIcon->addAction(actionSearchCity);
     menuTrayIcon->addAction(actionSettings);
@@ -40,7 +43,7 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     // --- ГЛАВНОЕ ОКНО ---
     window = new QDialog();
     window->setVisible(false);
-    window->setWindowTitle(tr("Настройки Weather"));
+
     window->resize(500, 450); // Удобный размер для вкладок
 
     // Главный слой — снова вертикальный
@@ -49,7 +52,7 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     mainLayout->setSpacing(15);
 
     // СОЗДАЕМ ТАБ-ВИДЖЕТ (Панель закладок)
-    QTabWidget *tabWidget = new QTabWidget(window);
+    tabWidget = new QTabWidget(window);
     mainLayout->addWidget(tabWidget);
 
     // ==========================================
@@ -64,9 +67,9 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     QWidget *topCard = new QWidget(apiPage);
     QVBoxLayout *topCardLayout = new QVBoxLayout(topCard);
     topCardLayout->setSpacing(5);
-    QLabel *titleLabel = new QLabel(tr("API-ключ сервиса WeatherAPI"), topCard);
+    titleLabel = new QLabel(topCard);
     apiLineEdit = new QLineEdit(topCard);
-    apiLineEdit->setPlaceholderText(tr("Введите API-ключ..."));
+
     QString apikey = weatherData->readApiKeyFromEnvFile();
     if (!apikey.isEmpty()) apiLineEdit->setText(apikey);
 
@@ -77,27 +80,30 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     // Средний блок: Инструкция
     QWidget *instructionCard = new QWidget(apiPage);
     QVBoxLayout *instructionLayout = new QVBoxLayout(instructionCard);
-    QLabel *infoLabel = new QLabel(instructionCard);
+    infoLabel = new QLabel(instructionCard);
     infoLabel->setWordWrap(true);
     infoLabel->setOpenExternalLinks(true);
-    QString infoText = tr(
-        "<span style='color: #52616B;'>Чтобы получить API-ключ, необходимо:</span>"
-        "<ol style='margin-top: 5px; margin-bottom: 0px; padding-left: 20px; color: #52616B;'>"
-        "<li>Перейти по ссылке: <a href='https://www.weatherapi.com/signup.aspx' style='color: #0078D4;'>https://www.weatherapi.com/signup.aspx</a></li>"
-        "<li>Зарегистрироваться и войти в аккаунт</li>"
-        "<li>Перейти во вкладку API или перейти по ссылке: <a href='https://www.weatherapi.com/my/' style='color: #0078D4;'>https://www.weatherapi.com/my/</a></li>"
-        "<li>Найти сверху страницы автоматически сгенерированный API key</li>"
-        "<li>Нажать на кнопку Copy и вставить API-ключ в поле выше</li>"
-        "<li>Нажать кнопку Сохранить и закрыть</li>"
-        "</ol>"
-        );
-    infoLabel->setText(infoText);
+
     instructionLayout->addWidget(infoLabel);
     apiLayout->addWidget(instructionCard);
     apiLayout->addStretch(); // Прижимает элементы к верху вкладки
 
+    QHBoxLayout *languageLayout = new QHBoxLayout(apiPage);
+    languageLabel = new QLabel();
+
+    languageComboBox = new QComboBox();
+    languageComboBox->addItems(languageList);
+
+    languageLayout->addWidget(languageLabel);
+    languageLayout->addWidget(languageComboBox);
+    languageLayout->setSpacing(5);
+    languageLayout->setContentsMargins(10, 10, 10, 10);
+    languageLayout->addStretch();
+    apiLayout->addLayout(languageLayout);
+
+
     // Добавляем страницу в качестве первой закладки
-    tabWidget->addTab(apiPage, tr("API-ключ"));
+    tabWidget->addTab(apiPage, "");
 
 
     // ==========================================
@@ -131,7 +137,7 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
 
     // --- Строка Долготы ---
     QHBoxLayout *latLayout = new QHBoxLayout();
-    QLabel *latLabel = new QLabel("Долгота: ");
+    latLabel = new QLabel();
     latEdit = new QLineEdit();
     latEdit->setReadOnly(true);        // Только чтение
     latLayout->addWidget(latLabel, 0); // Текст занимает место по минимуму
@@ -140,7 +146,7 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
 
     // --- Строка Широты ---
     QHBoxLayout *lonLayout = new QHBoxLayout();
-    QLabel *lonLabel = new QLabel("Широта: ");
+    lonLabel = new QLabel();
     lonEdit = new QLineEdit();
     lonEdit->setReadOnly(true);        // Только чтение
     lonLayout->addWidget(lonLabel, 0); // Текст по минимуму
@@ -149,7 +155,7 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
 
     // --- Строка Адреса ---
     QHBoxLayout *addressLayout = new QHBoxLayout();
-    QLabel *addressLabel = new QLabel("Адрес: ");
+    addressLabel = new QLabel();
     addressEdit = new QLineEdit();
     addressEdit->setReadOnly(true);            // Только чтение
     addressLayout->addWidget(addressLabel, 0); // Текст по минимуму
@@ -161,7 +167,7 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     lonEdit->setText(QString::number(weatherData->lon));
 
     // 4. Добавляем собранную страницу со всемдержимым внутрь вкладки
-    tabWidget->addTab(locationPage, tr("Местоположение"));
+    tabWidget->addTab(locationPage, "");
 
 
     // ==========================================
@@ -169,8 +175,8 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     // ==========================================
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->setSpacing(10);
-    QPushButton *saveButton = new QPushButton(tr("Сохранить и закрыть"), window);
-    QPushButton *cancelButton = new QPushButton(tr("Отмена"), window);
+    saveButton = new QPushButton(window);
+    cancelButton = new QPushButton(window);
     saveButton->setFocusPolicy(Qt::NoFocus);
     cancelButton->setFocusPolicy(Qt::NoFocus);
 
@@ -189,12 +195,16 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     // Клик по "Настройки" в трее -> открываем окно на первой вкладке (индекс 0)
     connect(actionSettings, &QAction::triggered, window, [=]() {
         tabWidget->setCurrentIndex(0);
+        languageComboBox->setCurrentText(translator->readLangFromEnvFile());
+        apiLineEdit->setText(weatherData->readApiKeyFromEnvFile());
         window->setVisible(true);
     });
 
     // Клик по "Выбрать местоположение" в трее -> открываем окно сразу на второй вкладке (индекс 1)
     connect(actionSearchCity, &QAction::triggered, window, [=]() {
         tabWidget->setCurrentIndex(1);
+        languageComboBox->setCurrentText(translator->readLangFromEnvFile());
+        apiLineEdit->setText(weatherData->readApiKeyFromEnvFile());
         window->setVisible(true);
     });
 
@@ -209,12 +219,14 @@ SettingsTrayMenu::SettingsTrayMenu(WeatherData *weather, QObject *parent) : QObj
     });
 
     systemTrayIcon->show();
+    retranslateUi();
 }
 
 void SettingsTrayMenu::saveAPI() {
     QString adr = weatherData->readAddressFromEnvFile();
     double lat = weatherData->readLatFromEnvFile();
     double lon = weatherData->readLonFromEnvFile();
+
     if (apiLineEdit->text().isEmpty() or latEdit->text() == "0" or lonEdit->text() == "0" or addressEdit->text().isEmpty()) {
         QMessageBox::warning(window,
                             tr("Не введен API-ключ или не указано местоположение!"),
@@ -232,11 +244,51 @@ void SettingsTrayMenu::saveAPI() {
         if (apiLineEdit->text() != weatherData->readApiKeyFromEnvFile()){
             weatherData->writeApiKeyToEnvFile(apiLineEdit->text());
         }
+        translator->writeLangToEnvFile(languageComboBox->currentText());
+        translator->setLanguage();
         weatherData->getWeatherData();
 
         window->close();
     }
 }
 
+void SettingsTrayMenu::changeEvent(QEvent *event)
+{
+    // Обязательно вызываем базовый класс
+    QWidget::changeEvent(event);
 
+    if (event->type() == QEvent::LanguageChange) {
+        retranslateUi();
+    }
+}
+
+void SettingsTrayMenu::retranslateUi() {
+    actionSettings->setText(tr("Настройки"));
+    actionSearchCity->setText(tr("Выбрать местоположение"));
+    actionExit->setText(tr("Закрыть виджет"));
+    window->setWindowTitle(tr("Настройки Weather"));
+    titleLabel->setText(tr("API-ключ сервиса WeatherAPI"));
+    apiLineEdit->setPlaceholderText(tr("Введите API-ключ..."));
+    infoText = tr(
+        "<span style='color: #52616B;'>Чтобы получить API-ключ, необходимо:</span>"
+        "<ol style='margin-top: 5px; margin-bottom: 0px; padding-left: 20px; color: #52616B;'>"
+        "<li>Перейти по ссылке: <a href='https://www.weatherapi.com/signup.aspx' style='color: #0078D4;'>https://www.weatherapi.com/signup.aspx</a></li>"
+        "<li>Зарегистрироваться и войти в аккаунт</li>"
+        "<li>Перейти во вкладку API или перейти по ссылке: <a href='https://www.weatherapi.com/my/' style='color: #0078D4;'>https://www.weatherapi.com/my/</a></li>"
+        "<li>Найти сверху страницы автоматически сгенерированный API key</li>"
+        "<li>Нажать на кнопку Copy и вставить API-ключ в поле выше</li>"
+        "<li>Нажать кнопку Сохранить и закрыть</li>"
+        "</ol>");
+    infoLabel->setText(infoText);
+    languageLabel->setText(tr("Язык: "));
+    tabWidget->setTabText(0, tr("API-ключ"));
+    tabWidget->setTabText(1, tr("Местоположение"));
+    latLabel->setText(tr("Долгота: "));
+    lonLabel->setText(tr("Широта: "));
+    addressLabel->setText(tr("Адрес: "));
+    saveButton->setText(tr("Сохранить и закрыть"));
+    cancelButton->setText(tr("Отмена"));
+
+
+}
 
