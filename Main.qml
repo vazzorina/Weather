@@ -12,7 +12,7 @@ Window {
     property string mainFontColor: "#3f2f0d"
 
     id: wind
-    width: 450
+    width: 460
     height: 400
     x: managerWeather.x_window
     y: managerWeather.y_window
@@ -116,68 +116,58 @@ Window {
                 }
             }
 
-            // 3. Горизонтальный блок почасового прогноза со скроллом
-            Flickable {
-                Layout.preferredWidth: 410
-                Layout.preferredHeight: 110 // Немного увеличили, чтобы поместился скроллбар, если он появится
-                contentWidth: hourlyRow.implicitWidth // Важно: задает область прокрутки по ширине
-                clip: true // Обрезает элементы, которые выходят за границы зоны
+            ListView {
+                id: weatherList
+                Layout.preferredWidth: 420
+                Layout.preferredHeight: 110
+                orientation: ListView.Horizontal // Горизонтальная прокрутка
+                clip: true
+                spacing: 5
+                model: weatherModel // Ваша модель данных
 
-                RowLayout {
-                    id: hourlyRow
-                    anchors.fill: parent
-                    spacing: 5
+                snapMode: ListView.SnapOneItem
 
-                    Repeater {
-                        // Здесь вместо 5 в реальном приложении будет ваша модель данных (например, ListModel или массив из C++)
-                        model: weatherModel
+                highlightRangeMode: ListView.StrictlyEnforceRange
 
-                        delegate: Rectangle {
-                            width: 80
-                            height: 110
-                            color: "transparent"
-                            radius: 15
+                delegate: Rectangle {
+                    width: 80
+                    height: 110
+                    color: "transparent"
+                    radius: 15
 
-                            Image {
-                                source: model.time === managerWeather.currentHour ? "qrc:qt/qml/Weather/images/current-hour-background.png" : "qrc:qt/qml/Weather/images/hour-background.png"
-                                anchors.fill: parent
-                                width: 450
-                                height: 400
-                            }
+                    Image {
+                        source: model.time === managerWeather.currentHour ? "qrc:qt/qml/Weather/images/current-hour-background.png" : "qrc:qt/qml/Weather/images/hour-background.png"
+                        anchors.fill: parent
+                    }
 
-                            focus: model.time === managerWeather.currentHour
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 2
 
-                            ColumnLayout {
-                                anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 2
+                        Text {
+                            text: model.time
+                            font.pixelSize: 12
+                            font.family: mainFontFamily
+                            color: mainFontColor
+                            Layout.alignment: Qt.AlignHCenter
+                        }
 
-                                Text {
-                                    // modelData хранит индекс или объект, если используется сложная модель
-                                    text: model.time
-                                    font.pixelSize: 12
-                                    font.family: mainFontFamily
-                                    color: mainFontColor
-                                    Layout.alignment: Qt.AlignHCenter
-                                }
+                        Image {
+                            source: model.icon
+                            Layout.preferredWidth: 60
+                            Layout.preferredHeight: 60
+                            fillMode: Image.Stretch
+                            Layout.alignment: Qt.AlignHCenter
+                        }
 
-                                Image {
-                                    source: model.icon
-                                    Layout.preferredWidth: 60
-                                    Layout.preferredHeight: 60
-                                    fillMode: Image.Stretch
-                                    Layout.alignment: Qt.AlignHCenter
-                                }
-
-                                Text {
-                                    text: model.temp + "℃"
-                                    font.pixelSize: 14
-                                    font.bold: true
-                                    font.family: mainFontFamily
-                                    color: mainFontColor
-                                    Layout.alignment: Qt.AlignHCenter
-                                }
-                            }
+                        Text {
+                            text: model.temp + "℃"
+                            font.pixelSize: 14
+                            font.bold: true
+                            font.family: mainFontFamily
+                            color: mainFontColor
+                            Layout.alignment: Qt.AlignHCenter
                         }
                     }
                 }
