@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US" sourcelanguage="ru_RU">
 <context>
+    <name>ManagerWeatherData</name>
+    <message>
+        <location filename="../managerweatherdata.cpp" line="59"/>
+        <source>ru</source>
+        <translation>en</translation>
+    </message>
+</context>
+<context>
     <name>MapWidget</name>
     <message>
         <source>Ничего не найдено</source>

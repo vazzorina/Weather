@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QMutex>
 #include <iostream>
+#include <QFontDatabase>
 
 #include "managermovingicons.h"
 #include "settingstraymenu.h"
@@ -65,6 +66,16 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
+    int id = QFontDatabase::addApplicationFont(":qt/qml/Weather/fonts/ArcadeJeu.otf");
+    if (id != -1) {
+        QStringList fontFamilies = QFontDatabase::applicationFontFamilies(id);
+        if (!fontFamilies.isEmpty()) {
+            qDebug() << "Успешно загружен шрифт. Имя для QML:" << fontFamilies.at(0);
+        }
+    } else {
+        qWarning() << "Не удалось загрузить шрифт!";
+    }
+
     TranslationManager *translator = new TranslationManager(&app);
     translator->setLanguage();
 
@@ -90,8 +101,7 @@ int main(int argc, char *argv[])
     });
 
     QObject::connect(translator, &TranslationManager::languageChanged, &app, [=]() {
-
-        //weatherData->getWeatherData();
+        managerWeather->updateDate();
     });
 
     ManagerMovingIcons mmi;

@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU" sourcelanguage="ru_RU">
 <context>
+    <name>ManagerWeatherData</name>
+    <message>
+        <location filename="../managerweatherdata.cpp" line="59"/>
+        <source>ru</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>MapWidget</name>
     <message>
         <location filename="../MapWidget.qml" line="35"/>
