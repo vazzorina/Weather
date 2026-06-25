@@ -166,5 +166,10 @@ To specify a location, select a point on the map or enter an address.</translati
         <source>ru</source>
         <translation>en</translation>
     </message>
+    <message>
+        <location filename="../weatherdata.cpp" line="200"/>
+        <source>Ошибка запроса</source>
+        <translation>API request error</translation>
+    </message>
 </context>
 </TS>

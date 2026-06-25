@@ -197,6 +197,8 @@ void WeatherData::handleReply() {
         qDebug() << "Данные о погоде получены";
 
     } else {
+        mngWD->setCityName(tr("Ошибка запроса"));
+        mngWD->setCondition(reply->errorString());
         qWarning() << "Ошибка запроса:" << reply->errorString();
     }
     reply->deleteLater();

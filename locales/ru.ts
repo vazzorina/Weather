@@ -159,5 +159,10 @@
         <source>ru</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="../weatherdata.cpp" line="200"/>
+        <source>Ошибка запроса</source>
+        <translation>Ошибка запроса</translation>
+    </message>
 </context>
 </TS>
