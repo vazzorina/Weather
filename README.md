@@ -1,5 +1,7 @@
 # Weather
-Виджет рабочего стола с прогнозом погоды на С++, Qt, с использованием API ключа [WeatherAPI](https://www.weatherapi.com/) предоставляет информацию о текущей погоде, а также почасовой прогноз погоды для текушего дня. Есть возможность выбрать локацию и язык программы (русский/английский).
+Виджет рабочего стола с прогнозом погоды на С++, Qt, с использованием API ключа [WeatherAPI](https://www.weatherapi.com/) предоставляет информацию о текущей погоде, а также почасовой прогноз погоды для текущего дня. Есть возможность выбрать локацию и язык программы (русский/английский).
+
+[Установить Weather](https://github.com/vazzorina/Weather/releases/latest)
 
 <p align="center">
   <img src="https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white" />
@@ -28,20 +30,21 @@
 * **Языки:** С++, QML
 * **Система сборки:** CMake
 * **Модули:** QtLocation, QtPositioning, QtQuick, QtWidgets
+* **Операционная система:** Windows
 
 ---
 
 ### Демонстрация программы
 
-Виджет выполнен в пиксельной стилистике, имеет огромное количество уникальных иконок состояния погоды. 
+Виджет выполнен в стиле пиксель-арт, имеет огромное количество уникальных иконок состояния погоды.
 
-
-<img width="462" height="402" alt="image" src="https://github.com/user-attachments/assets/25a7ab2a-977a-4f17-a78b-c17c3535d793" />
-
+<p align="center">
+<img width="462" height="402" alt="Главное окно программы" src="https://github.com/user-attachments/assets/25a7ab2a-977a-4f17-a78b-c17c3535d793" />
+</p>
 <details> 
-<img width="502" height="482" alt="image" src="https://github.com/user-attachments/assets/d93e608b-907a-4a4c-82d1-b049aab18056" />
-<img width="502" height="482" alt="image" src="https://github.com/user-attachments/assets/510d3b50-2d27-4287-bab1-65518c1f68c2" />
-<img width="229" height="158" alt="image" src="https://github.com/user-attachments/assets/3d5ba37b-4a7a-4b33-8f27-161796c18b0c" />
+<img width="502" height="482" alt="Окно настроек" src="https://github.com/user-attachments/assets/d93e608b-907a-4a4c-82d1-b049aab18056" />
+<img width="502" height="482" alt="Окно выбора локации" src="https://github.com/user-attachments/assets/510d3b50-2d27-4287-bab1-65518c1f68c2" />
+<img width="229" height="158" alt="Меню виджета в системном трее" src="https://github.com/user-attachments/assets/3d5ba37b-4a7a-4b33-8f27-161796c18b0c" />
 
 </details> 
 
@@ -50,7 +53,7 @@
 Требования к платформе: Qt Creator 6.11.X (компилятор MinGW)
 
 Инструкция:
-1. Клонируйе репозиторий в нужный вам каталог с помощью команды:
+1. Клонируйте репозиторий в нужный вам каталог с помощью команды:
 ```text
 git clone https://github.com/vazzorina/Weather
 ```
